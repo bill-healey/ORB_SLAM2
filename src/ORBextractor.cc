@@ -407,7 +407,9 @@ static int bit_pattern_31_[256*4] =
 };
 
 ORBextractor::ORBextractor(int _nfeatures, float _scaleFactor, int _nlevels,
-         int _iniThFAST, int _minThFAST):
+         int _iniThFAST, int _minThFAST, 
+	 std::vector<std::vector<int>> excludedRegions,
+	 bool initialization=false):
     nfeatures(_nfeatures), scaleFactor(_scaleFactor), nlevels(_nlevels),
     iniThFAST(_iniThFAST), minThFAST(_minThFAST)
 {
