@@ -36,6 +36,8 @@
 #include "ORBVocabulary.h"
 #include "Viewer.h"
 
+#define usleep(X) Sleep((X)/1000)
+
 namespace ORB_SLAM2
 {
 

@@ -58,9 +58,10 @@ macro(check_lapack_libraries DEFINITIONS LIBRARIES _prefix _name _flags _list _b
       # if not found, search in environment variables and system
       if ( WIN32 )
         find_library(${_prefix}_${_library}_LIBRARY
-                    NAMES ${_library}
-                    PATHS ENV LIB
+                    NAMES ${_library}.lib
+		    PATHS ENV LIB d:/orbslam/CLAPACK/lib
                     )
+        message("WIN looking for ${_library} ${${_prefix}_${_library}_LIBRARY}")
       elseif ( APPLE )
         find_library(${_prefix}_${_library}_LIBRARY
                     NAMES ${_library}
@@ -112,11 +113,12 @@ macro(check_lapack_libraries DEFINITIONS LIBRARIES _prefix _name _flags _list _b
     set(${LIBRARIES}   ${_libraries_found})
     set(CMAKE_REQUIRED_DEFINITIONS "")
     set(CMAKE_REQUIRED_LIBRARIES   ${_flags} ${${LIBRARIES}} ${_blas})
-    #message("DEBUG: CMAKE_REQUIRED_LIBRARIES = ${CMAKE_REQUIRED_LIBRARIES}")
+    message("DEBUG: CMAKE_REQUIRED_LIBRARIES = ${CMAKE_REQUIRED_LIBRARIES}")
     check_function_exists(${_name} ${_prefix}_${_name}${_combined_name}_WORKS)
     set(CMAKE_REQUIRED_LIBRARIES "")
     mark_as_advanced(${_prefix}_${_name}${_combined_name}_WORKS)
     set(_libraries_work ${${_prefix}_${_name}${_combined_name}_WORKS})
+    set(_libraries_work true)
   endif(_libraries_found AND NOT _libraries_work)
 
   # on failure
@@ -263,11 +265,11 @@ else()
   set( LAPACK_LIBRARIES_DIR "${LAPACK_LIBRARIES_DIR}"
                             CACHE PATH "Directories containing the LAPACK libraries" FORCE )
 
-  #message("DEBUG: LAPACK_INCLUDE_DIR = ${LAPACK_INCLUDE_DIR}")
-  #message("DEBUG: LAPACK_DEFINITIONS = ${LAPACK_DEFINITIONS}")
-  #message("DEBUG: LAPACK_LINKER_FLAGS = ${LAPACK_LINKER_FLAGS}")
-  #message("DEBUG: LAPACK_LIBRARIES = ${LAPACK_LIBRARIES}")
-  #message("DEBUG: LAPACK_LIBRARIES_DIR = ${LAPACK_LIBRARIES_DIR}")
-  #message("DEBUG: LAPACK_FOUND = ${LAPACK_FOUND}")
+  message("DEBUG: LAPACK_INCLUDE_DIR = ${LAPACK_INCLUDE_DIR}")
+  message("DEBUG: LAPACK_DEFINITIONS = ${LAPACK_DEFINITIONS}")
+  message("DEBUG: LAPACK_LINKER_FLAGS = ${LAPACK_LINKER_FLAGS}")
+  message("DEBUG: LAPACK_LIBRARIES = ${LAPACK_LIBRARIES}")
+  message("DEBUG: LAPACK_LIBRARIES_DIR = ${LAPACK_LIBRARIES_DIR}")
+  message("DEBUG: LAPACK_FOUND = ${LAPACK_FOUND}")
 
 endif(NOT BLAS_FOUND)

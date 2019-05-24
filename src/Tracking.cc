@@ -1520,7 +1520,7 @@ void Tracking::Reset()
 
     cout << "System Reseting" << endl;
     while(!mpViewer->isStopped())
-        usleep(3000);
+        Sleep(3);
 
     // Reset Local Mapping
     cout << "Reseting Local Mapper...";

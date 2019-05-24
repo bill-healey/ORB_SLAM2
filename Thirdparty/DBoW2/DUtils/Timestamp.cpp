@@ -16,18 +16,13 @@
 #include <cmath>
 #include <sstream>
 #include <iomanip>
+#include <sys/timeb.h>
+#include <sys/types.h>
 
 #ifdef _WIN32
 #ifndef WIN32
 #define WIN32
 #endif
-#endif
-
-#ifdef WIN32
-#include <sys/timeb.h>
-#define sprintf sprintf_s
-#else
-#include <sys/time.h>
 #endif
 
 #include "Timestamp.h"
@@ -56,8 +51,8 @@ bool Timestamp::empty() const
 void Timestamp::setToCurrentTime(){
 	
 #ifdef WIN32
-	struct __timeb32 timebuffer;
-	_ftime32_s( &timebuffer ); // C4996
+	struct __timeb64 timebuffer;
+	_ftime64_s( &timebuffer ); // C4996
 	// Note: _ftime is deprecated; consider using _ftime_s instead
 	m_secs = timebuffer.time;
 	m_usecs = timebuffer.millitm * 1000;
@@ -95,7 +90,7 @@ double Timestamp::getFloatTime() const {
 }
 
 string Timestamp::getStringTime() const {
-	char buf[32];
+	char buf[64];
 	sprintf(buf, "%.6lf", this->getFloatTime());
 	return string(buf);
 }

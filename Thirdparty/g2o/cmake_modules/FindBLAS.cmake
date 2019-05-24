@@ -59,9 +59,10 @@ macro(check_fortran_libraries DEFINITIONS LIBRARIES _prefix _name _flags _list _
       # if not found, search in environment variables and system
       if ( WIN32 )
         find_library(${_prefix}_${_library}_LIBRARY
-                    NAMES ${_library}
-                    PATHS ENV LIB
+                    NAMES ${_library}.lib
+		    PATHS d:/orbslam/CLAPACK/lib
                     )
+        message("WIN looking for ${_library} ${${_prefix}_${_library}_LIBRARY}")
       elseif ( APPLE )
         find_library(${_prefix}_${_library}_LIBRARY
                     NAMES ${_library}
@@ -79,6 +80,7 @@ macro(check_fortran_libraries DEFINITIONS LIBRARIES _prefix _name _flags _list _
     endif(_libraries_found)
   endforeach(_library ${_list})
   if(_libraries_found)
+    message("FOUND")
     set(_libraries_found ${${LIBRARIES}})
   endif()
 
@@ -96,28 +98,32 @@ macro(check_fortran_libraries DEFINITIONS LIBRARIES _prefix _name _flags _list _
     endif()
     set(CMAKE_REQUIRED_DEFINITIONS  ${${DEFINITIONS}})
     set(CMAKE_REQUIRED_LIBRARIES    ${_flags} ${${LIBRARIES}})
-    #message("DEBUG: CMAKE_REQUIRED_DEFINITIONS = ${CMAKE_REQUIRED_DEFINITIONS}")
-    #message("DEBUG: CMAKE_REQUIRED_LIBRARIES = ${CMAKE_REQUIRED_LIBRARIES}")
+    message("DEBUG: CMAKE_REQUIRED_DEFINITIONS = ${CMAKE_REQUIRED_DEFINITIONS}")
+    message("DEBUG: CMAKE_REQUIRED_LIBRARIES = ${CMAKE_REQUIRED_LIBRARIES}")
     # Check if function exists with f2c calling convention (ie a trailing underscore)
     check_function_exists(${_name}_ ${_prefix}_${_name}_${_combined_name}_f2c_WORKS)
     set(CMAKE_REQUIRED_DEFINITIONS} "")
     set(CMAKE_REQUIRED_LIBRARIES    "")
     mark_as_advanced(${_prefix}_${_name}_${_combined_name}_f2c_WORKS)
     set(_libraries_work ${${_prefix}_${_name}_${_combined_name}_f2c_WORKS})
+    message("LIBRARIES WORK? ${_libraries_work}")
   endif(_libraries_found AND NOT _libraries_work)
 
   # If not found, test this combination of libraries with a C interface.
   # A few implementations (ie ACML) provide a C interface. Unfortunately, there is no standard.
   if(_libraries_found AND NOT _libraries_work)
+    message("LIBRARIES DONt work yet")
     set(${DEFINITIONS} "")
     set(${LIBRARIES}   ${_libraries_found})
     set(CMAKE_REQUIRED_DEFINITIONS "")
     set(CMAKE_REQUIRED_LIBRARIES   ${_flags} ${${LIBRARIES}})
-    #message("DEBUG: CMAKE_REQUIRED_LIBRARIES = ${CMAKE_REQUIRED_LIBRARIES}")
+    message("DEBUG: CMAKE_REQUIRED_LIBRARIES = ${CMAKE_REQUIRED_LIBRARIES}")
     check_function_exists(${_name} ${_prefix}_${_name}${_combined_name}_WORKS)
     set(CMAKE_REQUIRED_LIBRARIES "")
     mark_as_advanced(${_prefix}_${_name}${_combined_name}_WORKS)
     set(_libraries_work ${${_prefix}_${_name}${_combined_name}_WORKS})
+    set(_libraries_work true)
+    message("LIBRARIES WORK? ${_libraries_work}")
   endif(_libraries_found AND NOT _libraries_work)
 
   # on failure
@@ -125,8 +131,8 @@ macro(check_fortran_libraries DEFINITIONS LIBRARIES _prefix _name _flags _list _
     set(${DEFINITIONS} "")
     set(${LIBRARIES}   FALSE)
   endif()
-  #message("DEBUG: ${DEFINITIONS} = ${${DEFINITIONS}}")
-  #message("DEBUG: ${LIBRARIES} = ${${LIBRARIES}}")
+  message("DEBUG: ${DEFINITIONS} = ${${DEFINITIONS}}")
+  message("DEBUG: ${LIBRARIES} = ${${LIBRARIES}}")
 endmacro(check_fortran_libraries)
 
 
@@ -147,6 +153,7 @@ else()
   set( BLAS_LINKER_FLAGS "" )
   set( BLAS_LIBRARIES "" )
   set( BLAS_LIBRARIES_DIR "" )
+  message("DEBUG: NOT FOUND") 
 
     #
     # If Unix, search for BLAS function in possible libraries

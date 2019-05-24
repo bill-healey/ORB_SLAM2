@@ -23,20 +23,26 @@ elseif(COMPILER_SUPPORTS_CXX0X)
    add_definitions(-DCOMPILEDWITHC0X)
    message(STATUS "Using flag -std=c++0x.")
 else()
-   message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+   #message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 
-find_package(OpenCV 2.4.3 REQUIRED)
+find_package(OpenCV REQUIRED) #MODIFIED 2.4.3
 find_package(Eigen3 3.1.0 REQUIRED)
 find_package(Pangolin REQUIRED)
+add_definitions(-DHAVE_GLEW -D_USE_MATH_DEFINES)
 
 include_directories(
 ${PROJECT_SOURCE_DIR}
 ${PROJECT_SOURCE_DIR}/include
 ${EIGEN3_INCLUDE_DIR}
 ${Pangolin_INCLUDE_DIRS}
+D:/orbslam/libzmq/install_dir/include
+D:/orbslam/protobuf/install_dir/include/google/protobuf
+D:/orbslam/Pangolin/include
+D:/orbslam/Pangolin
+D:/orbslam
 )
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
@@ -67,8 +73,10 @@ target_link_libraries(${PROJECT_NAME}
 ${OpenCV_LIBS}
 ${EIGEN3_LIBS}
 ${Pangolin_LIBRARIES}
-${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so
-${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
+D:/orbslam/libzmq/install_dir/bin/libzmq.dll
+D:/orbslam/protobuf/install_dir/lib/libprotobuf.a
+${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.dll
+${PROJECT_SOURCE_DIR}/Thirdparty/g2o/build/libg2o.dll
 )
 
 # Build examples
@@ -95,3 +103,8 @@ add_executable(mono_kitti
 Examples/Monocular/mono_kitti.cc)
 target_link_libraries(mono_kitti ${PROJECT_NAME})
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Live)
+
+add_executable(live
+Examples/Live/live.cc)
+target_link_libraries(live ${PROJECT_NAME})
