@@ -34,6 +34,7 @@
 using namespace std;
 void* context = NULL;
 void* publisher = NULL;
+bool fShutdown = FALSE;
 
 void init_zmq() {
 	context = zmq_init(1);
@@ -64,6 +65,14 @@ void zmq_send_const_string(const char* string) {
 	cout << "sent " << string << endl;
 }
 
+BOOL WINAPI consoleHandler(DWORD signal) {
+    if (signal == CTRL_C_EVENT) {
+        printf("Ctrl-C caught, cleaning up\n");
+	fShutdown = TRUE;
+    }
+    return TRUE;
+}
+
 int main(int argc, char **argv) {
     std::string voc = "../../Vocabulary/ORBvoc.bin";
     std::string settings = "tiny6.yaml";
@@ -86,9 +95,18 @@ int main(int argc, char **argv) {
     //tiny6
     cap.set(4,720);
     cap.set(5,576);
-    ORB_SLAM2::System SLAM(voc,settings,ORB_SLAM2::System::MONOCULAR,true);
+    ORB_SLAM2::System SLAM(voc,settings,ORB_SLAM2::System::MONOCULAR,true,false);
 
-    while(true) {
+    //printf("Loading map..\n");
+    //SLAM.LoadMap("Slam_latest_Map.bin");
+    //printf("Loading map.. complete\n");
+
+    if (!SetConsoleCtrlHandler(consoleHandler, TRUE)) {
+        printf("ERROR: Could not set control handler\n"); 
+        return 1;
+    }
+
+    while(!fShutdown) {
         bool frame_captured = cap.read(frame);
         std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
         double tframe = 33.3;
@@ -109,7 +127,8 @@ int main(int argc, char **argv) {
     frame.release();
     cap.release();
     SLAM.Shutdown();
-    //SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
+    SLAM.SaveMap("Slam_latest_Map.bin");    
+    SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
     return 0;
 }
 
