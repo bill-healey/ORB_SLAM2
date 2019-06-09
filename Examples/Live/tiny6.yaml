@@ -40,6 +40,7 @@ ORBextractor.nLevels: 8
 # You can lower these values if your images have low contrast			
 ORBextractor.iniThFAST: 20
 ORBextractor.minThFAST: 7
+ORBextractor.ExcludedRegions: [[0, 323, 199, 480], [429, 303, 640, 480]]
 
 #--------------------------------------------------------------------------------------------
 # Viewer Parameters
